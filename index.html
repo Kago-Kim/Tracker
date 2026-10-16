@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Routine Tracker</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0E6B66">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#EDF1F0;--card:#FFFFFF;--ink:#17262C;--mute:#5E7077;--line:#D3DDDB;--acc:#0E6B66;--accI:#FFFFFF;--warn:#A9650F;--warnBg:#FBEFD9;--bad:#A8342A;--ok:#CFE8E3;--min:#F2DFA8;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101A1C;--card:#192629;--ink:#E4EEEC;--mute:#92A7A5;--line:#2B3D40;--acc:#4FC1B6;--accI:#0B1B1C;--warn:#E8B260;--warnBg:#33291A;--bad:#F08A7E;--ok:#1E4A47;--min:#5A4A1C}}
+:root[data-theme="dark"]{--bg:#101A1C;--card:#192629;--ink:#E4EEEC;--mute:#92A7A5;--line:#2B3D40;--acc:#4FC1B6;--accI:#0B1B1C;--warn:#E8B260;--warnBg:#33291A;--bad:#F08A7E;--ok:#1E4A47;--min:#5A4A1C}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Schibsted Grotesk",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:16px;line-height:1.4}
+main{max-width:560px;margin:0 auto;padding:16px 16px 96px}
+h1{font-size:26px;font-weight:800;margin:4px 0 2px;letter-spacing:-.02em}
+h2{font-size:17px;font-weight:600;margin:20px 0 8px}
+.sub{color:var(--mute);font-size:14px;margin:0 0 12px}
+.nav{display:flex;align-items:center;gap:8px}
+.nav button{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:18px}
+.nav div{flex:1}
+.note{background:var(--warnBg);color:var(--warn);border-radius:10px;padding:10px 12px;margin:8px 0;font-size:14px}
+.note.bad{color:var(--bad)}
+.task{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin:8px 0}
+.task b{display:block;font-weight:600}
+.task span{color:var(--mute);font-size:13px}
+.btns{display:flex;gap:8px;margin-top:10px}
+.btns button,.b{flex:1;min-height:44px;border-radius:10px;border:1px solid var(--line);background:transparent;color:var(--ink);font:inherit;font-weight:600}
+.btns button.on.f{background:var(--acc);color:var(--accI);border-color:var(--acc)}
+.btns button.on.m{background:var(--min);border-color:var(--min)}
+.b{background:var(--acc);color:var(--accI);border-color:var(--acc);width:100%;margin-top:10px}
+.b.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+.score{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
+.big{font-size:40px;font-weight:800;letter-spacing:-.03em}
+.bar{height:10px;background:var(--line);border-radius:5px;position:relative;margin-top:8px}
+.bar i{display:block;height:100%;border-radius:5px;background:var(--acc)}
+.bar u{position:absolute;left:80%;top:-4px;height:18px;border-left:2px solid var(--ink)}
+.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:10px}
+.cell{border-radius:8px;padding:6px 0;text-align:center;background:var(--card);border:1px solid var(--line);font-size:13px}
+.cell small{display:block;color:var(--mute)}
+.cell.g{background:var(--ok)}.cell.r{border-color:var(--bad)}
+label{display:block;font-size:14px;color:var(--mute);margin:10px 0 4px}
+input,select,textarea{width:100%;font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px}
+textarea{min-height:76px}
+.row{display:flex;gap:8px}.row>*{flex:1}
+.li{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:6px 0;font-size:14px}
+.tabs{position:fixed;left:0;right:0;bottom:0;display:flex;background:var(--card);border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px))}
+.tabs button{flex:1;min-height:48px;border:0;background:transparent;color:var(--mute);font:inherit;font-weight:600;border-radius:10px}
+.tabs button.on{color:var(--acc);background:var(--bg)}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.chart{display:flex;gap:4px;align-items:flex-end;margin-top:12px}
+.col{flex:1;text-align:center}
+.col small{display:block;font-size:10px;color:var(--mute)}
+.bw{height:100px;background:var(--line);border-radius:6px;display:flex;align-items:flex-end;overflow:hidden;position:relative;margin-bottom:4px}
+.bw i{display:block;width:100%;background:var(--mute)}
+.bw i.ok{background:var(--acc)}
+.bw:after{content:'';position:absolute;left:0;right:0;bottom:80%;border-top:1px dashed var(--ink);opacity:.5}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<nav class="tabs" id="tabs"></nav>
+<script>
+const T={study:['Maths / CS study','90 min of problems and coding','20 min of problems'],gym:['Gym','Full session','20 min bodyweight or a walk'],chess:['Chess','20-30 min tactics, plus a game and review','10 min tactics'],trading:['Trading study','45 min theory, paper trade, journal','10 min journal entry'],sleep:['In bed on time','7+ hours of sleep','Lights out as early as you can'],review:['Weekly review','1 hr: look back and plan the week','10 min: pick one change'],backup:['Back up your data','Backup tab: tap Copy, paste into a note to yourself','Same thing, it only takes 1 minute']};
+const PLAN={1:['study','gym','trading','chess','sleep'],2:['study','gym','chess','sleep'],3:['study','trading','chess','sleep'],4:['study','gym','chess','sleep'],5:['study','chess'],6:['gym','chess'],0:['review','backup','sleep']};
+const DN=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const pad=n=>String(n).padStart(2,'0');
+const fmt=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const parse=s=>{const a=s.split('-').map(Number);return new Date(a[0],a[1]-1,a[2])};
+const add=(s,n)=>{const d=parse(s);d.setDate(d.getDate()+n);return fmt(d)};
+const monday=s=>add(s,-((parse(s).getDay()+6)%7));
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const today=fmt(new Date());
+let S=load(),tab='today',view=today,msg='',armed=false;
+function load(){let s=null;try{s=JSON.parse(localStorage.getItem('rt1'))}catch(e){}
+ s=s||{};s.days=s.days||{};s.party=s.party||[];s.reviews=s.reviews||{};s.start=s.start||today;return s}
+function save(){try{localStorage.setItem('rt1',JSON.stringify(S))}catch(e){}}
+const plan=s=>PLAN[parse(s).getDay()];
+const val=(d,t)=>(S.days[d]||{})[t];
+const missed=(d,t)=>plan(d).includes(t)&&d>=S.start&&!val(d,t);
+function dayLabel(s){const d=parse(s);return DN[d.getDay()]+' '+d.getDate()+'/'+(d.getMonth()+1)}
+
+function today_(){
+ let h='<div class="nav"><button data-act="day" data-v="-1" aria-label="Previous day">&lsaquo;</button><div><h1>'+(view===today?'Today':dayLabel(view))+'</h1><p class="sub">'+dayLabel(view)+' &middot; '+plan(view).map(t=>T[t][0]).join(', ')+'</p></div><button data-act="day" data-v="1" aria-label="Next day"'+(view>=today?' disabled':'')+'>&rsaquo;</button></div>';
+ const pv=add(view,-1);
+ if(S.party.some(p=>p.date===pv&&(+p.actual>0||p.sub==='used')))h+='<div class="note">Party last night. Hangover protocol: go to lessons, do the minimum study, take a walk instead of the gym, and skip trading today.</div>';
+ plan(view).forEach(t=>{
+  const v=val(view,t);
+  if(!v&&view<=today){
+   if(missed(pv,t)){const two=missed(add(view,-2),t);h+='<div class="note'+(two?' bad':'')+'">'+T[t][0]+': '+(two?'two misses in a row. Do at least the minimum now.':'missed yesterday. Do not miss twice.')+'</div>'}
+  }
+  h+='<div class="task"><b>'+T[t][0]+'</b><span>Full: '+T[t][1]+'<br>Minimum: '+T[t][2]+'</span><div class="btns"><button class="f'+(v==='f'?' on':'')+'" data-act="mark" data-t="'+t+'" data-v="f">Full</button><button class="m'+(v==='m'?' on':'')+'" data-act="mark" data-t="'+t+'" data-v="m">Minimum</button></div></div>';
+ });
+ h+='<p class="sub">A minimum counts as done. Tap a button again to undo.</p>';
+ return h;
+}
+
+function weekStats(wk){
+ let p=0,d=0,cells='';
+ for(let i=0;i<7;i++){const day=add(wk,i),pl=plan(day),dn=pl.filter(t=>val(day,t)).length,fut=day>today||day<S.start;
+  if(!fut){p+=pl.length;d+=dn}
+  const cls=fut?'':(dn===pl.length?'g':(day<today?'r':''));
+  cells+='<div class="cell '+cls+'"><small>'+DN[parse(day).getDay()].slice(0,3)+'</small>'+(fut?'-':dn+'/'+pl.length)+'</div>';}
+ return{p,d,cells,pct:p?Math.round(d/p*100):0};
+}
+function week_(){
+ const wk=monday(view),w=weekStats(wk),r=S.reviews[wk]||{};
+ let h='<h1>This week</h1><p class="sub">Week of '+dayLabel(wk)+'. Target: 80% of planned sessions.</p>';
+ h+='<div class="score"><div class="big">'+w.pct+'%</div><div class="sub">'+w.d+' of '+w.p+' planned sessions so far'+(w.p&&w.pct>=80?'. On target.':(w.p?'. Below target.':''))+'</div><div class="bar"><i style="width:'+Math.min(100,w.pct)+'%"></i><u></u></div><div class="grid">'+w.cells+'</div></div>';
+ h+='<h2>Weekly review</h2><p class="sub">Do this on Sunday. It saves as you type.</p>';
+ [['miss','What did I miss?'],['why','Why?'],['chg','One change for next week']].forEach(x=>{h+='<label for="r'+x[0]+'">'+x[1]+'</label><textarea id="r'+x[0]+'" data-k="'+x[0]+'" data-wk="'+wk+'">'+esc(r[x[0]]||'')+'</textarea>'});
+ return h;
+}
+
+function prog_(){
+ const days=[];for(let d=S.start;d<=today&&days.length<1000;d=add(d,1))days.push(d);
+ const wk0=monday(today),mk=today.slice(0,7),n=parse(today),pm=fmt(new Date(n.getFullYear(),n.getMonth()-1,1)).slice(0,7);
+ let bars='',sum=0,cnt=0;
+ for(let i=9;i>=0;i--){const wk=add(wk0,-7*i),w=weekStats(wk);if(w.p){sum+=w.pct;cnt++}
+  bars+='<div class="col"><div class="bw"><i class="'+(w.pct>=80?'ok':'')+'" style="height:'+w.pct+'%"></i></div><small>'+(w.p?w.pct+'%':'-')+'</small><small>'+parse(wk).getDate()+'/'+(parse(wk).getMonth()+1)+'</small></div>'}
+ let h='<h1>Progress</h1><p class="sub">Built from what you tick off. Nothing extra to log.</p>';
+ h+='<div class="score"><div class="big">'+(cnt?Math.round(sum/cnt):'-')+'%</div><div class="sub">average weekly score'+(cnt?' over '+cnt+' week'+(cnt>1?'s':''):'')+'. The dashed line is the 80% target; filled bars hit it.</div><div class="chart">'+bars+'</div></div>';
+ h+='<h2>Streaks and monthly totals</h2><p class="sub">Streaks count only the days a habit was planned. A minimum keeps the streak alive.</p>';
+ Object.keys(T).forEach(t=>{let cur=0,best=0,tm=[0,0],lm=[0,0];
+  days.forEach(d=>{if(!plan(d).includes(t))return;const ok=!!val(d,t),m=d.slice(0,7),c=m===mk?tm:m===pm?lm:null;
+   if(c&&!(d===today&&!ok)){c[1]++;if(ok)c[0]++}
+   if(ok){cur++;best=Math.max(best,cur)}else if(d!==today)cur=0});
+  h+='<div class="li"><b>'+T[t][0]+'</b><br>Streak: '+cur+' (best '+best+')<br><span class="sub">This month '+tm[0]+'/'+tm[1]+' &middot; last month '+lm[0]+'/'+lm[1]+'</span></div>'});
+ return h;
+}
+
+function party_(){
+ const ps=S.party.slice().sort((a,b)=>b.date<a.date?-1:1);
+ const used=ps.filter(p=>p.sub==='used');
+ const since=used.length?Math.round((parse(today)-parse(used[0].date))/864e5):null;
+ const rec=ps.slice(0,8),over=rec.filter(p=>+p.actual>+p.plan).length;
+ let h='<h1>Party log</h1><p class="sub">Log it the next morning. Patterns show up here.</p>';
+ h+='<div class="score"><div class="big">'+(since===null?'-':since)+'</div><div class="sub">'+(since===null?'No substance use logged.':'days since last substance use')+(rec.length?'<br>Over your drink plan on '+over+' of the last '+rec.length+' nights.':'')+'</div></div>';
+ h+='<h2>Add a night</h2><label for="pd">Date</label><input id="pd" type="date" value="'+add(today,-1)+'"><div class="row"><div><label for="pp">Drinks planned</label><input id="pp" type="number" min="0" value="3"></div><div><label for="pa">Drinks actual</label><input id="pa" type="number" min="0" value="3"></div></div><label for="ps">Substances</label><select id="ps"><option value="none">None</option><option value="used">Used</option></select><label for="pn">Notes (sleep, mood, study next day)</label><input id="pn" type="text"><button class="b" data-act="addparty">Save night</button>';
+ h+='<h2>Recent nights</h2>';
+ h+=ps.length?ps.slice(0,12).map(p=>'<div class="li"><b>'+dayLabel(p.date)+'</b>: '+p.actual+' of '+p.plan+' planned drinks'+(p.sub==='used'?', substances used':'')+(p.note?'<br><span class="sub">'+esc(p.note)+'</span>':'')+' <button class="b ghost" style="min-height:36px;margin-top:6px" data-act="delparty" data-v="'+p.id+'">Delete</button></div>').join(''):'<p class="sub">Nothing logged yet.</p>';
+ return h;
+}
+
+function data_(){
+ return '<h1>Backup</h1><p class="sub">Your data lives only in this browser. Copy it somewhere safe now and then. Clearing browser data erases it.</p>'+(msg?'<div class="note">'+msg+'</div>':'')+'<label for="dx">Your data</label><textarea id="dx" style="min-height:160px">'+esc(JSON.stringify(S))+'</textarea><div class="row"><button class="b" data-act="copy">Copy</button><button class="b ghost" data-act="import">Restore from box</button></div><button class="b ghost" data-act="reset">'+(armed?'Tap again to erase everything':'Erase all data')+'</button>';
+}
+
+function render(){
+ $('app').innerHTML={today:today_,week:week_,prog:prog_,party:party_,data:data_}[tab]();
+ $('tabs').innerHTML=[['today','Today'],['week','Week'],['prog','Progress'],['party','Party'],['data','Backup']].map(x=>'<button data-act="tab" data-v="'+x[0]+'" class="'+(tab===x[0]?'on':'')+'">'+x[1]+'</button>').join('');
+}
+function $(id){return document.getElementById(id)}
+
+document.addEventListener('click',e=>{
+ const el=e.target.closest('[data-act]');if(!el)return;
+ const a=el.dataset.act,v=el.dataset.v;
+ if(a==='tab'){tab=v;msg='';armed=false}
+ else if(a==='day'){const n=add(view,+v);if(n<=today)view=n}
+ else if(a==='mark'){const t=el.dataset.t;S.days[view]=S.days[view]||{};if(S.days[view][t]===v)delete S.days[view][t];else S.days[view][t]=v;save()}
+ else if(a==='addparty'){const d=$('pd').value;if(!d)return;S.party.push({id:Date.now(),date:d,plan:+$('pp').value||0,actual:+$('pa').value||0,sub:$('ps').value,note:$('pn').value});save()}
+ else if(a==='delparty'){S.party=S.party.filter(p=>String(p.id)!==v);save()}
+ else if(a==='copy'){const x=$('dx');x.select();let ok=false;try{ok=document.execCommand('copy')}catch(err){}msg=ok?'Copied.':'Select the text and copy it by hand.'}
+ else if(a==='import'){try{const o=JSON.parse($('dx').value);if(!o.days)throw 0;S=o;S.party=S.party||[];S.reviews=S.reviews||{};S.start=S.start||today;save();msg='Restored.'}catch(err){msg='That text is not valid backup data.'}}
+ else if(a==='reset'){if(armed){S={days:{},party:[],reviews:{},start:today};save();armed=false;msg='Erased.'}else{armed=true}}
+ render();
+});
+document.addEventListener('input',e=>{
+ const t=e.target;if(t.dataset&&t.dataset.k){const wk=t.dataset.wk;S.reviews[wk]=S.reviews[wk]||{};S.reviews[wk][t.dataset.k]=t.value;save()}
+});
+save();render();
+if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+</script>
+</body>
+</html>
